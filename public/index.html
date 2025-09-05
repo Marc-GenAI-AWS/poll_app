@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI League Game Show - Vote</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .model-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .model-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .model-card.selected {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        .question-progress {
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-2">
+                    <i class="fas fa-robot mr-3"></i>AI League Game Show
+                </h1>
+                <p class="text-xl opacity-90">Vote for the best AI model performance</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div id="welcome-section" class="max-w-2xl mx-auto text-center mb-8">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, Participant!</h2>
+                <p class="text-gray-600 mb-6">Enter your name to begin voting on AI model performances across 5 questions.</p>
+                
+                <div class="mb-4">
+                    <input type="text" id="participant-name" placeholder="Enter your full name" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Event:</label>
+                    <select id="event-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Loading events...</option>
+                    </select>
+                </div>
+                
+                <button id="start-voting" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-play mr-2"></i>Start Voting
+                </button>
+            </div>
+        </div>
+
+        <!-- Voting Section -->
+        <div id="voting-section" class="hidden">
+            <!-- Progress Bar -->
+            <div class="max-w-4xl mx-auto mb-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Progress</h3>
+                        <span id="progress-text" class="text-sm text-gray-600">Question 1 of 5</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="progress-bar" class="question-progress bg-blue-600 h-3 rounded-full" style="width: 20%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="max-w-4xl mx-auto mb-8">
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <h2 id="question-title" class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                        Question 1: Which AI model performed best?
+                    </h2>
+                    
+                    <!-- AI Models Grid -->
+                    <div id="models-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Models will be loaded here -->
+                    </div>
+                    
+                    <!-- Navigation Buttons -->
+                    <div class="flex justify-between items-center">
+                        <button id="prev-question" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-arrow-left mr-2"></i>Previous
+                        </button>
+                        
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Selected: <span id="selected-model" class="font-semibold">None</span></p>
+                        </div>
+                        
+                        <button id="next-question" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Next<i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Section -->
+        <div id="completion-section" class="hidden max-w-2xl mx-auto text-center">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="text-green-500 mb-4">
+                    <i class="fas fa-check-circle text-6xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Thank You!</h2>
+                <p class="text-gray-600 mb-6">Your votes have been successfully submitted. Thank you for participating in the AI League Game Show!</p>
+                <button id="vote-again" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300">
+                    <i class="fas fa-redo mr-2"></i>Vote Again
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p class="text-gray-600">Submitting your vote...</p>
+        </div>
+    </div>
+
+    <script src="voting.js"></script>
+</body>
+</html>
